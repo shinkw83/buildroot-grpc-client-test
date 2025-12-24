@@ -1,0 +1,308 @@
+syntax = "proto3";
+
+package ams.device.grpc;
+
+option java_multiple_files = true;
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  OK = 1;
+  ERROR = 2;
+}
+
+enum DateTimeType {
+  DATE_TIME_TYPE_UNSPECIFIED = 0;
+  MANUAL = 1;
+  NTP = 2;
+}
+
+enum NetworkMode {
+  NETWORK_MODE_UNSPECIFIED = 0;
+  DHCP = 1;
+  STATIC = 2;
+}
+
+enum DayOfWeek {
+  DAY_OF_WEEK_UNSPECIFIED = 0;
+  MON = 1;
+  TUE = 2;
+  WED = 3;
+  THI = 4;
+  FRI = 5;
+  SAT = 6;
+  SUN = 7;
+}
+
+enum OnvifAccessLevel {
+  ONVIF_ACCESS_LEVEL_UNSPECIFIED = 0;
+  ADMIN = 1;
+  OPERATOR = 2;
+  USER = 3;
+}
+
+message Error {
+  string code = 1;
+  string message = 2;
+}
+
+message SetDeviceInformationRequest {
+  string name = 1;
+  string location = 2;
+}
+
+message GetSystemDateAndTimeRequest {}
+
+message SetSystemDateAndTimeRequest {
+  DateTimeType date_time_type = 1;
+  string time_zone = 2;
+  string utc_time = 3;
+  string ntp_server = 4;
+}
+
+message GetNetworkInterfacesRequest {}
+
+message SetNetworkInterfacesRequest {
+  NetworkMode mode = 1;
+  string ipv4_address = 2;
+  string netmask = 3;
+  string gateway = 4;
+  repeated string dns = 5;
+  string hostname = 6;
+}
+
+message SipAccount {
+  string name = 1;
+  string auth_id = 2;
+  string auth_password = 3;
+  string server = 4;
+}
+
+message GetSipInformationRequest {}
+
+message AddSipUserRequest {
+  SipAccount account = 1;
+}
+
+message DeleteSipUserRequest {
+  string name = 1;
+}
+
+message SetSipUserRequest {
+  SipAccount account = 1;
+}
+
+message OnvifUser {
+  string username = 1;
+  string password = 2;
+  OnvifAccessLevel access_level = 3;
+}
+
+message GetOnvifInformationRequest {}
+
+message AddOnvifUserRequest {
+  OnvifUser user = 1;
+}
+
+message DeleteOnvifUserRequest {
+  string username = 1;
+}
+
+message SetOnvifUserRequest {
+  OnvifUser user = 1;
+}
+
+message GetPaAddressRequest {}
+
+message SetPaAddressRequest {
+  string address = 1;
+}
+
+message GetSnapcastAddressRequest {}
+
+message SetSnapcastAddressRequest {
+  string address = 1;
+}
+
+message GetVolumeRequest {}
+
+message SetVolumeRequest {
+  int32 speaker_volume = 1;
+  int32 mic_volume = 2;
+}
+
+message Schedule {
+  string id = 1;
+  string name = 2;
+  string start_date = 3;
+  optional string end_date = 4;
+  repeated DayOfWeek day_of_week = 5;
+  string start_time = 6;
+  optional string end_time = 7;
+  int32 time_interval = 8;
+  string sound_id = 9;
+  string display_text = 10;
+  repeated string exception_date = 11;
+  repeated string exception_datetime = 12;
+  bool enabled = 13;
+  int32 volume = 14;
+}
+
+message GetScheduleListRequest {}
+
+message AddScheduleRequest {
+  Schedule schedule = 1;
+}
+
+message DeleteScheduleRequest {
+  string id = 1;
+}
+
+message SetScheduleRequest {
+  string id = 1;
+  bool enabled = 2;
+  int32 volume = 3;
+}
+
+message ExceptionScheduleRequest {
+  string id = 1;
+  string exception_date = 2;
+  optional string exception_time = 3;
+}
+
+message StartBroadcastRequest {
+  string id = 1;
+  string display_text = 2;
+  int32 volume = 3;
+}
+
+message StopBroadcastRequest {}
+
+message AudioClip {
+  string id = 1;
+  string name = 2;
+  string filename = 3;
+  string presigned_url = 4;
+}
+
+message AddAudioClipRequest {
+  AudioClip clip = 1;
+}
+
+message EditAudioClipRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message DeleteAudioClipRequest {
+  string id = 1;
+}
+
+message SystemRebootRequest {}
+
+message GetSystemDateAndTimeResponse {
+  DateTimeType date_time_type = 1;
+  string time_zone = 2;
+  string utc_time = 3;
+  string local_time = 4;
+  string ntp_server = 5;
+}
+
+message GetNetworkInterfacesResponse {
+  NetworkMode mode = 1;
+  string ipv4_address = 2;
+  string netmask = 3;
+  string gateway = 4;
+  repeated string dns = 5;
+  string hostname = 6;
+}
+
+message GetSipInformationResponse {
+  repeated SipAccount accounts = 1;
+}
+
+message GetOnvifInformationResponse {
+  repeated OnvifUser users = 1;
+}
+
+message GetPaAddressResponse {
+  string address = 1;
+}
+
+message GetSnapcastAddressResponse {
+  string address = 1;
+}
+
+message GetVolumeResponse {
+  int32 speaker_volume = 1;
+  int32 mic_volume = 2;
+}
+
+message GetScheduleListResponse {
+  repeated Schedule schedules = 1;
+}
+
+message SystemRebootResponse {
+  string message = 1;
+}
+
+message InitSessionNotify {
+  string mac_address = 1;
+}
+
+message ServerMessage {
+  string message_id = 1;
+  oneof payload {
+    SetDeviceInformationRequest set_device_information = 2;
+    GetSystemDateAndTimeRequest get_system_date_and_time = 3;
+    SetSystemDateAndTimeRequest set_system_date_and_time = 4;
+    GetNetworkInterfacesRequest get_network_interfaces = 5;
+    SetNetworkInterfacesRequest set_network_interfaces = 6;
+    GetSipInformationRequest get_sip_information = 7;
+    AddSipUserRequest add_sip_user = 8;
+    DeleteSipUserRequest delete_sip_user = 9;
+    SetSipUserRequest set_sip_user = 10;
+    GetOnvifInformationRequest get_onvif_information = 11;
+    AddOnvifUserRequest add_onvif_user = 12;
+    DeleteOnvifUserRequest delete_onvif_user = 13;
+    SetOnvifUserRequest set_onvif_user = 14;
+    GetPaAddressRequest get_pa_address = 15;
+    SetPaAddressRequest set_pa_address = 16;
+    GetSnapcastAddressRequest get_snapcast_address = 17;
+    SetSnapcastAddressRequest set_snapcast_address = 18;
+    GetVolumeRequest get_volume = 19;
+    SetVolumeRequest set_volume = 20;
+    GetScheduleListRequest get_schedule_list = 21;
+    AddScheduleRequest add_schedule = 22;
+    DeleteScheduleRequest delete_schedule = 23;
+    SetScheduleRequest set_schedule = 24;
+    ExceptionScheduleRequest exception_schedule = 25;
+    StartBroadcastRequest start_broadcast = 26;
+    StopBroadcastRequest stop_broadcast = 27;
+    AddAudioClipRequest add_audio_clip = 28;
+    EditAudioClipRequest edit_audio_clip = 29;
+    DeleteAudioClipRequest delete_audio_clip = 30;
+    SystemRebootRequest system_reboot = 31;
+  }
+}
+
+message DeviceMessage {
+  string message_id = 1;
+  Status status = 2;
+  Error error = 3;
+  oneof payload {
+    GetSystemDateAndTimeResponse get_system_date_and_time = 4;
+    GetNetworkInterfacesResponse get_network_interfaces = 5;
+    GetSipInformationResponse get_sip_information = 6;
+    GetOnvifInformationResponse get_onvif_information = 7;
+    GetPaAddressResponse get_pa_address = 8;
+    GetSnapcastAddressResponse get_snapcast_address = 9;
+    GetVolumeResponse get_volume = 10;
+    GetScheduleListResponse get_schedule_list = 11;
+    SystemRebootResponse system_reboot = 12;
+    InitSessionNotify init_session_notify = 13;
+  }
+}
+
+service DeviceControlService {
+  rpc Session(stream DeviceMessage) returns (stream ServerMessage);
+}
